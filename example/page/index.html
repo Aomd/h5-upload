@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>h5-upload</title>
+</head>
+
+<body>
+  <input type="file" onchange="change()" multiple>
+  <input type="button" value="开始" onclick="start()">
+  <input type="button" value="暂停" onclick="pause()">
+  <textarea name="" id="content" cols="30" rows="10"></textarea>
+  <script type="module">
+    import {fileUpload} from '../../fileUpload.js'
+
+   var fileUploads = new fileUpload({
+     type:'ajax',
+     size:1024,
+     url:'http://127.0.0.1:3000/'
+   })
+
+   window.change = function (e){
+    for(let item of event.target.files){
+      fileUploads.addfile(item)
+    }
+   }
+
+   window.start = function(){
+    fileUploads.start();
+   }
+
+   window.pause = function(){
+    fileUploads.pause();
+   }
+
+   
+   var content = document.getElementById('content');
+
+   fileUploads.on('start',function(){
+    push('开始上传')
+   })
+   fileUploads.on('pause',function(){
+    push('暂停')
+   })
+   fileUploads.on('end',function(){
+    push('上传完成')
+   })
+   fileUploads.on('progress',function(file,files,progress){
+    push('当前进度'+progress)
+   })
+   fileUploads.on('change',function(file,files){
+    push('添加文件'+file.name)
+   })
+   fileUploads.on('error',function(message){
+    push(message)
+   })
+   
+   function push(str){
+    // content.innerText = content.value + str + '\r\n'
+    content.value = str +"\n" + content.value
+   }
+  </script>
+</body>
+
+</html>
