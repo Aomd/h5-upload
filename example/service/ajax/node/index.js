@@ -30,7 +30,7 @@ http.createServer(function (req, res) {
     // 解决 预请求 (最优解决方法是判断请求头信息)
     if (data.length > 0) {
 
-      var entity = new uploadEntity(data)
+      var entity = new UploadEntity(data)
 
       if (entity.parameter.current_chunk < entity.parameter.totol_chunk) {
         entity.parameter['type'] = 'progress'
@@ -135,15 +135,15 @@ function delTemp(files, entity) {
   }
 }
 
-class uploadEntity {
-  constructor(data) {
+class UploadEntity {
+  constructor(arrayBuffer) {
 
-    var _header = data.slice(0, 16);
+    var _header = arrayBuffer.slice(0, 16);
     var _header_buffer = Buffer.from(_header, 'hex');
     var _header_value = +(_header_buffer + '')
     this.header = _header_value;
 
-    var _parameter = data.slice(16, (data.length - _header_value))
+    var _parameter = arrayBuffer.slice(16, (arrayBuffer.length - _header_value))
     var _parameter_buffer = Buffer.from(_parameter, 'hex');
     var _parameter_value = _parameter_buffer + ''
     try {
@@ -152,7 +152,7 @@ class uploadEntity {
       this.parameter = '';
     }
 
-    var _data = data.slice(data.length - _header_value, data.length);
+    var _data = arrayBuffer.slice(arrayBuffer.length - _header_value, arrayBuffer.length);
 
     var _data_buffer = Buffer.from(_data, 'hex');
     var _data_value = _data_buffer
